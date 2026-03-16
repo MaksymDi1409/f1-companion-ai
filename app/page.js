@@ -31,7 +31,7 @@ export default function Home() {
             </div>
             
             <div className="text-xs text-gray-500 dark:text-gray-400 text-right">
-              <div>Powered by OpenAI GPT-4</div>
+              <div>Powered by Google Gemini 3-flash</div>
               <div>Data from Ergast F1 API</div>
             </div>
           </div>

@@ -1,5 +1,5 @@
 // app/api/chat/route.js
-import { createChatCompletion } from '@/lib/openai';
+import { createChatCompletion } from '@/lib/gemini';
 
 export async function POST(request) {
   try {
@@ -9,7 +9,7 @@ export async function POST(request) {
       return new Response('Invalid request', { status: 400 });
     }
 
-    // Отримуємо streaming відповідь від OpenAI
+    // Отримуємо streaming відповідь від Gemini
     const stream = await createChatCompletion(messages);
 
     // Створюємо ReadableStream для відправки клієнту
@@ -18,12 +18,22 @@ export async function POST(request) {
       async start(controller) {
         try {
           for await (const chunk of stream) {
-            const content = chunk.choices[0]?.delta?.content || '';
+            const text = chunk.text();
             
-            if (content) {
-              // Відправляємо chunk у форматі Server-Sent Events
-              const text = `data: ${JSON.stringify(chunk)}\n\n`;
-              controller.enqueue(encoder.encode(text));
+            if (text) {
+              // Відправляємо chunk у форматі SSE (схожому на OpenAI)
+              const data = {
+                choices: [
+                  {
+                    delta: {
+                      content: text,
+                    },
+                  },
+                ],
+              };
+              
+              const message = `data: ${JSON.stringify(data)}\n\n`;
+              controller.enqueue(encoder.encode(message));
             }
           }
 
