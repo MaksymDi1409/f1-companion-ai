@@ -3,6 +3,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Send, Loader2, Sparkles } from 'lucide-react';
+import { useF1Data } from '@/app/F1DataContext';
 
 export default function Chat() {
   const [messages, setMessages] = useState([
@@ -15,8 +16,8 @@ export default function Chat() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const { f1Data } = useF1Data();
 
-  // Автоскрол до останнього повідомлення
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -25,7 +26,6 @@ export default function Chat() {
     scrollToBottom();
   }, [messages]);
 
-  // Відправка повідомлення
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
@@ -33,12 +33,10 @@ export default function Chat() {
     const userMessage = input.trim();
     setInput('');
     
-    // Додаємо повідомлення користувача
     setMessages((prev) => [...prev, { role: 'user', content: userMessage }]);
     setIsLoading(true);
 
     try {
-      // Викликаємо API endpoint
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -46,6 +44,7 @@ export default function Chat() {
         },
         body: JSON.stringify({
           messages: [...messages, { role: 'user', content: userMessage }],
+          f1Data: f1Data,
         }),
       });
 
@@ -53,12 +52,10 @@ export default function Chat() {
         throw new Error('Failed to get response');
       }
 
-      // Читаємо streaming відповідь
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let assistantMessage = '';
 
-      // Додаємо порожнє повідомлення асистента для streaming
       setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
 
       while (true) {
@@ -78,7 +75,6 @@ export default function Chat() {
               const content = parsed.choices[0]?.delta?.content || '';
               assistantMessage += content;
 
-              // Оновлюємо останнє повідомлення
               setMessages((prev) => {
                 const newMessages = [...prev];
                 newMessages[newMessages.length - 1].content = assistantMessage;
@@ -105,7 +101,6 @@ export default function Chat() {
     }
   };
 
-  // Швидкі запитання
   const quickQuestions = [
     '🏁 Коли наступна гонка?',
     '👑 Хто лідирує в чемпіонаті?',
@@ -114,12 +109,12 @@ export default function Chat() {
   ];
 
   const handleQuickQuestion = (question) => {
-    setInput(question.replace(/^[^\s]+\s/, '')); // Прибираємо емодзі
+    setInput(question.replace(/^[^\s]+\s/, ''));
     inputRef.current?.focus();
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full chat-container">
       {/* Область повідомлень */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message, index) => (
@@ -132,8 +127,8 @@ export default function Chat() {
             <div
               className={`max-w-[80%] rounded-2xl px-4 py-3 ${
                 message.role === 'user'
-                  ? 'bg-red-600 text-white'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+                  ? 'chat-message-user'
+                  : 'chat-message-assistant'
               }`}
             >
               <div className="whitespace-pre-wrap break-words">
@@ -145,8 +140,8 @@ export default function Chat() {
 
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl px-4 py-3">
-              <Loader2 className="w-5 h-5 animate-spin text-gray-600" />
+            <div className="chat-loading rounded-2xl px-4 py-3">
+              <Loader2 className="w-5 h-5 animate-spin" />
             </div>
           </div>
         )}
@@ -157,7 +152,7 @@ export default function Chat() {
       {/* Швидкі запитання */}
       {messages.length <= 1 && (
         <div className="px-4 pb-3">
-          <div className="flex items-center gap-2 mb-2 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-2 mb-2 text-sm quick-question-label">
             <Sparkles className="w-4 h-4" />
             <span>Швидкі запитання:</span>
           </div>
@@ -166,7 +161,7 @@ export default function Chat() {
               <button
                 key={index}
                 onClick={() => handleQuickQuestion(question)}
-                className="text-left text-sm px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                className="text-left text-sm px-3 py-2 rounded-lg quick-question transition-colors"
               >
                 {question}
               </button>
@@ -175,8 +170,8 @@ export default function Chat() {
         </div>
       )}
 
-      {/* Форма вводу */}
-      <div className="border-t dark:border-gray-800 p-4">
+      {/* Форма */}
+      <div className="chat-input-container p-4">
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
             ref={inputRef}
@@ -185,12 +180,13 @@ export default function Chat() {
             onChange={(e) => setInput(e.target.value)}
             placeholder="Запитайте про F1..."
             disabled={isLoading}
-            className="flex-1 px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50"
+            className="flex-1 px-4 py-3 rounded-xl chat-input disabled:opacity-50"
           />
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            className="px-6 py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            style={{ backgroundColor: 'var(--red-600)', color: 'white' }}
           >
             {isLoading ? (
               <Loader2 className="w-5 h-5 animate-spin" />

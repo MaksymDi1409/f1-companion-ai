@@ -3,41 +3,28 @@ import { createChatCompletion } from '@/lib/gemini';
 
 export async function POST(request) {
   try {
-    const { messages } = await request.json();
+    const { messages, f1Data } = await request.json();
 
     if (!messages || !Array.isArray(messages)) {
       return new Response('Invalid request', { status: 400 });
     }
 
-    // Отримуємо streaming відповідь від Gemini
-    const stream = await createChatCompletion(messages);
+    // Передаємо f1Data в AI
+    const stream = await createChatCompletion(messages, f1Data);
 
-    // Створюємо ReadableStream для відправки клієнту
     const encoder = new TextEncoder();
     const readableStream = new ReadableStream({
       async start(controller) {
         try {
           for await (const chunk of stream) {
-            const text = chunk.text();
+            const content = chunk.text?.() || '';
             
-            if (text) {
-              // Відправляємо chunk у форматі SSE (схожому на OpenAI)
-              const data = {
-                choices: [
-                  {
-                    delta: {
-                      content: text,
-                    },
-                  },
-                ],
-              };
-              
-              const message = `data: ${JSON.stringify(data)}\n\n`;
-              controller.enqueue(encoder.encode(message));
+            if (content) {
+              const text = `data: ${JSON.stringify({ choices: [{ delta: { content } }] })}\n\n`;
+              controller.enqueue(encoder.encode(text));
             }
           }
 
-          // Сигналізуємо про завершення
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
         } catch (error) {
@@ -47,7 +34,6 @@ export async function POST(request) {
       },
     });
 
-    // Повертаємо streaming response
     return new Response(readableStream, {
       headers: {
         'Content-Type': 'text/event-stream',

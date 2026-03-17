@@ -10,34 +10,32 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('chat');
 
   return (
-    <div className="flex h-screen bg-white dark:bg-gray-900">
-      {/* Sidebar */}
+    <div className="flex h-screen app-container">
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <header className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 px-6 py-4">
+        <header className="app-header px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <h1 className="text-2xl font-bold flex items-center gap-2">
                 🏎️ F1 Companion AI
               </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <p className="text-sm mt-1">
                 {activeTab === 'chat' 
                   ? 'Запитай мене про Формулу 1' 
                   : 'Розклад та standings'}
               </p>
             </div>
             
-            <div className="text-xs text-gray-500 dark:text-gray-400 text-right">
-              <div>Powered by Google Gemini 3-flash</div>
-              <div>Data from Ergast F1 API</div>
+            <div className="text-xs quick-question-label text-right">
+              <div>Powered by Google Gemini 3</div>
+              <div>Data from OpenF1 API</div>
             </div>
           </div>
         </header>
 
-        {/* Content Area */}
+        {/* Content */}
         <main className="flex-1 overflow-hidden">
           {activeTab === 'chat' && <Chat />}
           {activeTab === 'schedule' && <RaceSchedule />}

@@ -9,10 +9,17 @@ export default function Sidebar({ activeTab, setActiveTab }) {
 
   // Перевірка теми при завантаженні
   useEffect(() => {
-    const isDark = localStorage.getItem('darkMode') === 'true';
+    // Перевіряємо localStorage
+    const savedMode = localStorage.getItem('darkMode');
+    const isDark = savedMode === 'true';
+    
     setDarkMode(isDark);
+    
+    // Застосовуємо до <html>
     if (isDark) {
       document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
   }, []);
 
@@ -20,8 +27,11 @@ export default function Sidebar({ activeTab, setActiveTab }) {
   const toggleDarkMode = () => {
     const newMode = !darkMode;
     setDarkMode(newMode);
+    
+    // Зберігаємо в localStorage
     localStorage.setItem('darkMode', newMode.toString());
     
+    // Додаємо/прибираємо клас dark з <html>
     if (newMode) {
       document.documentElement.classList.add('dark');
     } else {
