@@ -44,6 +44,8 @@ export default function Chat() {
         },
         body: JSON.stringify({
           messages: [...messages, { role: 'user', content: userMessage }],
+          // ГІБРИДНИЙ підхід: завжди передаємо f1Data
+          // AI сам вирішить використати API дані або Google Search
           f1Data: f1Data,
         }),
       });
@@ -105,7 +107,7 @@ export default function Chat() {
     '🏁 Коли наступна гонка?',
     '👑 Хто лідирує в чемпіонаті?',
     '🏎️ Розкажи про Ayrton Senna',
-    '⚡ Випадковий факт про F1',
+    '⚡ Що таке DRS?',
   ];
 
   const handleQuickQuestion = (question) => {

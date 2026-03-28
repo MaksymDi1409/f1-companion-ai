@@ -9,7 +9,8 @@ export async function POST(request) {
       return new Response('Invalid request', { status: 400 });
     }
 
-    // Передаємо f1Data в AI
+    // ГІБРИДНИЙ підхід: передаємо f1Data, але AI також має Google Search
+    // AI сам вирішить що використати: API дані (швидше) або Google Search (актуальніше)
     const stream = await createChatCompletion(messages, f1Data);
 
     const encoder = new TextEncoder();

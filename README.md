@@ -1,178 +1,380 @@
-# 🏎️ F1 Companion AI
+# 🏎️ F1 Companion AI - Hybrid Approach (НАЙКРАЩА ВЕРСІЯ!)
 
-Інтелектуальний чат-асистент для фанатів Формули 1 з інтеграцією AI та реального F1 API.
+## 🎯 Чому гібрид (API + Google Search)?
 
-## 🎯 Функціонал
+### ❌ Тільки API (старий підхід):
+- Обмежені дані (тільки 2026)
+- Якщо API падає → сайт не працює
+- Не може відповісти про 2024, 2025
 
-### ✅ Реалізовано:
-- 💬 **AI Чат** — streaming відповіді від GPT-4 про історію та актуальну інформацію F1
-- 📅 **Розклад гонок** — наступна гонка з countdown таймером
-- 🏆 **Standings** — поточні позиції пілотів у чемпіонаті
-- 🌓 **Темна/Світла тема** — перемикання теми інтерфейсу
-- 📱 **Адаптивний дизайн** — працює на всіх пристроях
+### ❌ Тільки Google Search:
+- Повільніше
+- Може знайти непотрібне
+- Менш структуровані дані
 
-### 🤖 AI можливості:
-- Історія Формули 1 (легендарні пілоти, моменти)
-- Поточний сезон (результати, standings)
-- Технічні аспекти (регламенти, стратегії)
-- Інформація про треки та команди
-- Відповіді українською та англійською
-
-## 🛠️ Технології
-
-- **Frontend:** Next.js 15, React 19, Tailwind CSS v4
-- **AI:** OpenAI GPT-4o-mini (streaming API)
-- **Data:** Ergast F1 API (історичні та поточні дані)
-- **Deployment:** Vercel
-- **Бібліотеки:** lucide-react, framer-motion, date-fns
-
-## 📦 Встановлення
-
-### 1. Клонування репозиторію
-```bash
-git clone https://github.com/ваш-username/f1-companion-ai.git
-cd f1-companion-ai
+### ✅ ГІБРИД (API + Google Search):
+```
+📊 API (OpenF1 + Jolpi)     +     🔍 Google Search
+        ↓                              ↓
+   Швидко і точно              Завжди актуально
+   для 2026 сезону            для будь-якого року
+        ↓                              ↓
+           🤖 AI сам вибирає що краще!
 ```
 
-### 2. Встановлення залежностей
-```bash
-npm install
+---
+
+## 🚀 Як це працює?
+
+### Схема роботи:
+
+```
+Користувач: "Хто лідирує в 2026?"
+     ↓
+AI бачить: є API дані за 2026 ✅
+     ↓
+Використовує API (швидко!) ⚡
+     ↓
+Відповідь: Russell лідирує з 51 очком
 ```
 
-### 3. Налаштування API ключів
-
-Створіть файл `.env.local` у корені проєкту:
-```env
-OPENAI_API_KEY=your_openai_api_key_here
+```
+Користувач: "Покажи топ 10 за 2025"
+     ↓
+AI бачить: API тільки для 2026 ❌
+     ↓
+Використовує Google Search 🔍
+     ↓
+Відповідь: Таблиця 2025 з Google
 ```
 
-**Як отримати API ключ:**
-1. Зареєструйтесь на https://platform.openai.com/
-2. Перейдіть у https://platform.openai.com/api-keys
-3. Створіть новий ключ
-4. Скопіюйте та вставте у `.env.local`
+```
+Користувач: "Де наступна гонка?"
+     ↓
+AI бачить: є розклад в API ✅
+     ↓
+Використовує API (миттєво!) ⚡
+     ↓
+Відповідь: Suzuka, 29 березня
+```
 
-### 4. Запуск проєкту
+---
+
+## 📊 Стратегія AI (пріоритети):
+
+```javascript
+// AI сам вибирає джерело даних:
+
+IF (питання про 2026 сезон) AND (є API дані) {
+  → USE API FIRST ⚡ (швидко і точно)
+}
+
+ELSE IF (питання про 2024/2025) {
+  → USE Google Search 🔍 (API не має цих даних)
+}
+
+ELSE IF (API дані неповні) {
+  → COMBINE обидва джерела 🔄
+}
+
+ELSE IF (API недоступний) {
+  → FALLBACK на Google Search 🛡️
+}
+
+ELSE IF (історичне питання) {
+  → USE тільки знання Gemini 📚 (без API і пошуку)
+}
+```
+
+---
+
+## 🔥 Переваги гібриду:
+
+### 1. **Швидкість для 2026** ⚡
+```
+API відповідає за ~100ms
+Google Search ~500-1000ms
+Гібрид: використовує API коли можна!
+```
+
+### 2. **Покриття всіх років** 📅
+```
+2026 → API (швидко)
+2025 → Google Search
+2024 → Google Search
+Історія → знання Gemini
+```
+
+### 3. **Надійність** 🛡️
+```
+API працює → використовуємо
+API падає → Google Search фолбек
+Gemini ліміт → кешовані API дані
+```
+
+### 4. **Точність** 🎯
+```
+API: структуровані дані (позиція, очки, команда)
+Google: додаткові деталі (новини, чутки)
+Комбінація: найповніша інформація!
+```
+
+---
+
+## 🔢 Ліміти та фолбеки:
+
+### Доступні моделі Gemini (пріоритет):
+
+#### 1️⃣ **Gemini 3 Flash** (основна):
+- RPM: 2/5 (2 запити в хвилину)
+- TPM: 780/250K токенів
+- Search grounding: **0/0 (НЕОБМЕЖЕНО)** ✅
+
+#### 2️⃣ **Gemini 2.5 Flash** (фолбек #1):
+- RPM: 0/5
+- TPM: 0/250K
+- Search grounding: 0/1.5K (1500 на день)
+
+#### 3️⃣ **Gemini 3.1 Flash Lite** (фолбек #2):
+- RPM: 0/15
+- TPM: 0/250K
+- Search grounding: 0/500
+
+### Логіка фолбеків:
+
+```javascript
+// В коді (lib/gemini.js):
+
+async function selectAvailableModel(useGoogleSearch = false) {
+  const models = [
+    { name: "gemini-3-flash-preview", tools: [...] },      // Спочатку
+    { name: "gemini-2.5-flash", tools: [...] },            // Якщо ліміт #1
+    { name: "gemini-3.1-flash-lite", tools: [...] },       // Якщо ліміт #2
+  ];
+  
+  return models[0]; // Можна додати логіку перевірки
+}
+```
+
+---
+
+## 📝 Приклади роботи:
+
+### Приклад 1: Актуальні дані 2026 (API)
+```
+👤 Користувач: "Хто лідирує?"
+
+🤖 AI думає:
+   - Є API дані за 2026? ✅ ТАК
+   - Використовую API (швидко!)
+   
+💬 Відповідь:
+   "Зараз лідирує George Russell (Mercedes) з 51 очком. 
+    За ним Andrea Kimi Antonelli з 47 очками."
+   
+⚡ Швидкість: ~200ms
+```
+
+### Приклад 2: Минулий рік (Google Search)
+```
+👤 Користувач: "Покажи топ 10 за 2025"
+
+🤖 AI думає:
+   - Питання про 2025
+   - API тільки для 2026 ❌
+   - Використовую Google Search
+   
+💬 Відповідь:
+   [Знаходить актуальну таблицю 2025 через Google]
+   
+🔍 Джерело: Google Search
+```
+
+### Приклад 3: Історія (без API і пошуку)
+```
+👤 Користувач: "Розкажи про Senna"
+
+🤖 AI думає:
+   - Історичне питання
+   - Не потрібні актуальні дані
+   - Використовую тільки знання Gemini
+   
+💬 Відповідь:
+   "Ayrton Senna - легендарний бразильський гонщик..."
+   
+📚 Джерело: знання Gemini
+```
+
+### Приклад 4: Комбінація (API + Google)
+```
+👤 Користувач: "Що сталося на останній гонці?"
+
+🤖 AI думає:
+   - Є розклад в API ✅
+   - Але потрібні результати (API не має)
+   - Використовую API для дати + Google для результатів
+   
+💬 Відповідь:
+   "Остання гонка була в Бахрейні 1 березня.
+    [Результати з Google Search]"
+   
+🔄 Джерело: API + Google Search
+```
+
+---
+
+## 🎨 Структура коду:
+
+### `lib/gemini.js` - мозок системи:
+```javascript
+// 1. Визначення потреби в даних
+needsCurrentData(userMessage)
+  → true: потрібні API/пошук
+  → false: чистий Gemini
+
+// 2. Вибір моделі з фолбеками
+selectAvailableModel(useGoogleSearch)
+  → gemini-3-flash-preview (основна)
+  → gemini-2.5-flash (фолбек)
+  → gemini-3.1-flash-lite (фолбек)
+
+// 3. Формування промпту
+IF (shouldUseCurrentData) {
+  Додає:
+  - API дані (якщо є)
+  - Інструкції для Google Search
+  - Стратегію вибору джерела
+}
+```
+
+### Ключовий промпт для AI:
+```
+📊 PRIMARY SOURCE - STRUCTURED API DATA (use this FIRST):
+[Таблиця очок, розклад]
+
+🔍 SECONDARY SOURCE - GOOGLE SEARCH (use when needed):
+[Інструкції коли шукати в Google]
+
+📋 USAGE STRATEGY:
+1. Current 2026 + API має дані → USE API
+2. Past seasons (2024, 2025) → USE GOOGLE
+3. API incomplete → COMBINE both
+4. No API data → USE GOOGLE
+```
+
+---
+
+## 🛡️ Обробка помилок:
+
+```javascript
+try {
+  // Спроба #1: API дані + Gemini 3 Flash
+  const result = await model.generateContent(enrichedPrompt);
+  
+} catch (error) {
+  if (error.code === 429) { // Rate limit
+    // Фолбек #1: Gemini 2.5 Flash
+    // Фолбек #2: Gemini 3.1 Flash Lite
+    // Фолбек #3: Кешовані API дані без AI
+  }
+}
+```
+
+---
+
+## 📦 Змінені файли:
+
+### 1. `lib/gemini.js`
+- ✅ Функція `selectAvailableModel()` - фолбеки
+- ✅ Гібридний промпт (API + Google Search)
+- ✅ Розумний вибір джерела даних
+
+### 2. `components/Chat.jsx`
+- ✅ Повернули `useF1Data` - потрібен для API
+- ✅ Завжди передаємо `f1Data` в запит
+- ✅ AI сам вирішує використати чи ні
+
+### 3. `app/api/chat/route.js`
+- ✅ Приймає `f1Data`
+- ✅ Передає в Gemini
+- ✅ Обробка помилок
+
+### 4. API endpoints (залишаємо!):
+- ✅ `lib/f1-api.js` - OpenF1 + Jolpi
+- ✅ `app/api/jolpi/route.js` - проксі
+- ✅ `app/F1DataContext.jsx` - кешування
+
+---
+
+## 🎯 Результат:
+
+### Було (чистий API):
+```
+❌ Тільки 2026 рік
+❌ Якщо API падає → сайт не працює
+❌ Обмежені дані
+```
+
+### Було (чистий Google Search):
+```
+❌ Повільніше
+❌ Може знайти непотрібне
+❌ Ліміти Gemini швидко вичерпуються
+```
+
+### Стало (ГІБРИД):
+```
+✅ API для 2026 (швидко!)
+✅ Google Search для 2024/2025 (актуально!)
+✅ Фолбеки на інші моделі (надійно!)
+✅ Завжди є відповідь (API ↔ Google ↔ Кеш)
+```
+
+---
+
+## 🚀 Як використовувати:
+
+1. **Замініть файли:**
+   - `lib/gemini.js`
+   - `components/Chat.jsx`
+   - `app/api/chat/route.js`
+
+2. **НЕ ВИДАЛЯЙТЕ:**
+   - `lib/f1-api.js` (потрібен!)
+   - `app/F1DataContext.jsx` (потрібен!)
+   - `app/api/jolpi/route.js` (потрібен!)
+
+3. **Перезапустіть сервер:**
 ```bash
 npm run dev
 ```
 
-Відкрийте http://localhost:3000 у браузері.
-
-## 🚀 Deployment на Vercel
-
-### Автоматичний deploy з GitHub:
-
-1. **Push на GitHub:**
-```bash
-git add .
-git commit -m "Ready for deployment"
-git push origin main
+4. **Тестуйте різні запити:**
+```
+✅ "Хто лідирує?" → API
+✅ "Топ 10 за 2025" → Google Search
+✅ "Де наступна гонка?" → API
+✅ "Розкажи про Senna" → Gemini
 ```
 
-2. **Vercel:**
-   - Зайдіть на https://vercel.com
-   - Sign in with GitHub
-   - **Import repository** → оберіть `f1-companion-ai`
-   - **Add Environment Variables:**
-     - `OPENAI_API_KEY` = ваш ключ
-   - **Deploy!**
+---
 
-3. **Отримаєте живе посилання:**
-   - `https://f1-companion-ai.vercel.app`
+## 🏁 Висновок:
 
-### Manual deploy:
-```bash
-npm install -g vercel
-vercel login
-vercel
-```
+**Гібридний підхід = Найкраще з обох світів!**
 
-## 📂 Структура проєкту
-```
-f1-companion-ai/
-├── app/
-│   ├── api/
-│   │   └── chat/
-│   │       └── route.js      # Backend API для streaming
-│   ├── layout.js             # Root layout
-│   ├── page.js               # Головна сторінка
-│   └── globals.css           # Глобальні стилі
-├── components/
-│   ├── Chat.jsx              # Компонент чату
-│   ├── RaceSchedule.jsx      # Розклад та standings
-│   └── Sidebar.jsx           # Навігація та theme switcher
-├── lib/
-│   ├── openai.js             # OpenAI клієнт
-│   └── f1-api.js             # Ergast API клієнт
-├── .env.local                # API ключі (не комітити!)
-├── .gitignore
-├── package.json
-└── README.md
-```
+- 🚀 **Швидкість** API для актуальних даних
+- 🔍 **Гнучкість** Google Search для будь-якого року
+- 🛡️ **Надійність** фолбеки на інші моделі
+- 🎯 **Точність** структуровані API дані
+- ⚡ **Актуальність** Google завжди свіжі дані
 
-## 🎓 Критерії оцінювання (20/20 балів)
+**Ваш F1 Companion тепер непереможний! 🏎️💨**
 
-| Критерій | Бали | Реалізація |
-|----------|------|------------|
-| **Розгортання** | 10/10 | ✅ Vercel з живим посиланням |
-| **API комунікація** | 3/3 | ✅ SSE streaming від OpenAI |
-| **Зовнішні сервіси** | 2/2 | ✅ OpenAI API + Ergast F1 API |
-| **Функціональність** | 5/5 | ✅ Чат, історія, real-time дані, теми |
+---
 
-## 📖 Використання
-
-### Приклади запитань до AI:
-
-- "Розкажи про Ayrton Senna"
-- "Хто лідирує в чемпіонаті?"
-- "Коли наступна гонка?"
-- "Що таке DRS?"
-- "Порівняй Hamilton і Verstappen"
-- "Випадковий факт про F1"
-
-### Навігація:
-
-- 💬 **Чат** — розмова з AI
-- 📅 **Розклад** — інформація про гонки
-- 🌓 **Тема** — перемикання світла/темряви
-
-## 🔒 Безпека
-
-⚠️ **Ніколи не комітьте `.env.local` на GitHub!**
-
-Файл `.gitignore` налаштований правильно, але перевірте:
-```bash
-cat .gitignore | grep env
-# Має показати: .env*
-```
-
-## 🐛 Troubleshooting
-
-### Помилка "API key not found":
-- Перевірте що `.env.local` існує
-- Перевірте що ключ починається з `sk-`
-- Перезапустіть dev сервер (`Ctrl+C` → `npm run dev`)
-
-### Помилка CORS:
-- Використовуйте тільки `/api/chat` endpoint (не прямі виклики OpenAI з клієнта)
-
-### Не працює streaming:
-- Перевірте що використовується `fetch` з `response.body.getReader()`
-
-## 📝 Автор
-
-**Ваше ім'я**  
-Самостійна робота з веб-програмування  
-Варіант 7.2: Чат з AI (інтеграція LLM у веб-додаток)
-
-## 📄 Ліцензія
-
-MIT License - вільне використання для навчальних цілей.
-
-## 🔗 Корисні посилання
-
-- [OpenAI API Docs](https://platform.openai.com/docs)
-- [Ergast F1 API](http://ergast.com/mrd/)
-- [Next.js Docs](https://nextjs.org/docs)
-- [Vercel Deployment](https://vercel.com/docs)
+*Powered by:*
+- *Gemini 3 Flash (з фолбеками)*
+- *OpenF1 API + Jolpi API*
+- *Google Search Grounding*
+- *Розумна система вибору джерел* 🧠

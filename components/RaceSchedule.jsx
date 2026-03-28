@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar, MapPin, Clock, Trophy, Loader2 } from 'lucide-react';
+import { Calendar, MapPin, Clock, Trophy, Loader2, ExternalLink } from 'lucide-react';
 import { 
   getNextRaceWeekend, 
   getDriverStandings,
@@ -35,6 +35,35 @@ export default function RaceSchedule() {
     loadData();
   }, []);
 
+// Генератор посилань для гонщиків із системою винятків
+  const generateDriverUrl = (firstName, lastName) => {
+    // 1. Створюємо базове ім'я
+    const fullName = `${firstName}-${lastName}`.toLowerCase();
+    let cleanName = fullName
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") 
+      .replace(/\s+/g, '-');
+
+    // 2. Словник винятків (сюди додаємо всіх "проблемних" гонщиків)
+    const exceptions = {
+      'andrea-kimi-antonelli': 'kimi-antonelli',
+      // 'guanyu-zhou': 'zhou-guanyu', // розкоментуй, якщо у Чжоу будуть проблеми
+      // 'alexander-albon': 'alex-albon', // приклад на майбутнє
+    };
+
+    // 3. Якщо згенероване ім'я є у словнику, замінюємо його на правильне
+    if (exceptions[cleanName]) {
+      cleanName = exceptions[cleanName];
+    }
+
+    return `https://www.formula1.com/en/drivers/${cleanName}`;
+  };
+
+  const generateRaceUrl = (country) => {
+    const formattedCountry = country.replace(/\s+/g, '_');
+    return `https://www.formula1.com/en/racing/2026/${formattedCountry}.html`;
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -51,18 +80,26 @@ export default function RaceSchedule() {
     );
   }
 
-  // Сортуємо сесії за датою
   const sortedSessions = [...raceWeekend.sessions].sort((a, b) => 
     new Date(a.date_start) - new Date(b.date_start)
   );
 
   return (
     <div className="p-6 space-y-6 overflow-y-auto h-full" style={{ backgroundColor: 'var(--bg-primary)' }}>
-      {/* Заголовок вікенду */}
-      <div className="bg-gradient-to-br from-red-600 to-red-700 text-white rounded-2xl p-6 shadow-lg">
-        <div className="flex items-center gap-2 mb-4">
-          <Calendar className="w-5 h-5" />
-          <h2 className="text-lg font-bold">Наступний Race Weekend</h2>
+      
+      {/* Заголовок вікенду — Ефект підняття (translate-y) */}
+      <a 
+        href={generateRaceUrl(raceWeekend.country)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block bg-gradient-to-br from-red-600 to-red-700 text-white rounded-2xl p-6 shadow-md transition-all duration-300 cursor-pointer group relative hover:z-10 transform hover:-translate-y-1.5 hover:shadow-2xl"
+      >
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-5 h-5" />
+            <h2 className="text-lg font-bold">Наступний Race Weekend</h2>
+          </div>
+          <ExternalLink className="w-5 h-5 opacity-50 group-hover:opacity-100 transition-opacity" />
         </div>
 
         <div className="space-y-3">
@@ -88,7 +125,7 @@ export default function RaceSchedule() {
             </div>
           </div>
         </div>
-      </div>
+      </a>
 
       {/* Розклад сесій */}
       <div className="race-card rounded-2xl p-6 shadow-lg">
@@ -135,7 +172,7 @@ export default function RaceSchedule() {
         </div>
       </div>
 
-      {/* Standings - Top 5 */}
+      {/* Standings - Top 5 — Ефект підняття (translate-y) */}
       {standings.length > 0 && (
         <div className="race-card rounded-2xl p-6 shadow-lg">
           <div className="flex items-center gap-2 mb-4">
@@ -145,15 +182,18 @@ export default function RaceSchedule() {
             </h2>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2">
             {standings.map((driver, index) => (
-              <div
+              <a
                 key={driver.Driver.driverId}
-                className="standings-item flex items-center justify-between p-3 rounded-lg transition-colors"
+                href={generateDriverUrl(driver.Driver.givenName, driver.Driver.familyName)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group standings-item flex items-center justify-between p-3 rounded-xl transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5 hover:shadow-md cursor-pointer relative hover:z-10 transform hover:-translate-y-1"
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-8 h-8 flex items-center justify-center rounded-full font-bold text-sm ${
+                    className={`w-8 h-8 flex items-center justify-center rounded-full font-bold text-sm shadow-sm ${
                       index === 0
                         ? 'bg-yellow-400 text-yellow-900'
                         : index === 1
@@ -174,8 +214,9 @@ export default function RaceSchedule() {
                     {driver.position}
                   </div>
                   <div>
-                    <div className="font-semibold" style={{ color: 'var(--text-primary)' }}>
+                    <div className="font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
                       {driver.Driver.givenName} {driver.Driver.familyName}
+                      <ExternalLink className="w-3.5 h-3.5 opacity-0 group-hover:opacity-70 transition-opacity text-red-600" />
                     </div>
                     <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                       {driver.Constructors[0]?.name}
@@ -190,7 +231,7 @@ export default function RaceSchedule() {
                     pts
                   </div>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         </div>

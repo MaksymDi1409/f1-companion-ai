@@ -1,6 +1,6 @@
 // app/layout.js
 import './globals.css';
-import { F1DataProvider } from './F1DataContext';
+import { AuthProvider } from "@/components/AuthProvider";
 
 export const metadata = {
   title: 'F1 Companion AI',
@@ -11,9 +11,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="uk">
       <body>
-        <F1DataProvider>
+        <AuthProvider>
           {children}
-        </F1DataProvider>
+        </AuthProvider>
       </body>
     </html>
   );
