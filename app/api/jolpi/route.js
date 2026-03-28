@@ -1,7 +1,7 @@
 // app/api/jolpi/route.js
 // Проксі для Jolpi F1 API (обходить CORS)
 
-const JOLPI_API = 'http://api.jolpi.ca/ergast/f1';
+const JOLPI_API = 'https://api.jolpi.ca/ergast/f1';
 
 export async function GET(request) {
   try {
